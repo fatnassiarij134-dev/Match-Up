@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscription - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Créer mon compte</h1>
+        <p>Compte fictif pour la démonstration : utilise un mot de passe inventé, jamais un vrai.</p>
+      </section>
+      <section class="contenu">
+        <form id="form" class="panneau form-etroit" novalidate>
+          <label for="prenom">Prénom</label>
+          <input id="prenom" type="text" autocomplete="given-name" />
+          <label for="nom">Nom</label>
+          <input id="nom" type="text" autocomplete="family-name" />
+          <label for="email">Adresse e-mail</label>
+          <input id="email" type="email" autocomplete="email" />
+          <label for="mdp">Mot de passe (fictif, 6 caractères min.)</label>
+          <input id="mdp" type="password" autocomplete="new-password" />
+          <label for="mdp2">Confirmation du mot de passe</label>
+          <input id="mdp2" type="password" autocomplete="new-password" />
+          <label class="case"><input id="cond" type="checkbox" /> J'accepte les conditions de la démonstration (données fictives, stockées dans ce navigateur).</label>
+          <p><button type="submit">Créer mon compte</button></p>
+          <p id="erreurs" class="message erreur" role="alert"></p>
+          <p>Déjà inscrit ? <a class="lien-violet" href="connexion.html">Se connecter</a></p>
+        </form>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Démonstration : aucune donnée réelle, aucun paiement.</footer>
+
+    <script src="auth.js"></script>
+    <script>
+      document.getElementById("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const v = function (id) { return document.getElementById(id).value.trim(); };
+        const prenom = v("prenom"), nom = v("nom"), email = v("email").toLowerCase();
+        const mdp = document.getElementById("mdp").value, mdp2 = document.getElementById("mdp2").value;
+        const erreurs = [];
+        if (!prenom || !nom || !email || !mdp) erreurs.push("Tous les champs sont obligatoires.");
+        if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) erreurs.push("Adresse e-mail invalide.");
+        if (mdp.length < 6) erreurs.push("Mot de passe : 6 caractères minimum.");
+        if (mdp !== mdp2) erreurs.push("Les mots de passe ne correspondent pas.");
+        if (!document.getElementById("cond").checked) erreurs.push("Accepte les conditions de la démonstration.");
+        if (getUsers().some(function (u) { return u.email === email; })) erreurs.push("Un compte existe déjà avec cet e-mail.");
+        if (erreurs.length > 0) { document.getElementById("erreurs").innerHTML = erreurs.map(echapperHtml).join("<br>"); return; }
+        saveUsers(getUsers().concat([{ prenom: prenom, nom: nom, email: email, hash: hashDemo(mdp), verifie: false }]));
+        ecrire(CLES.attente, email);
+        window.location.href = "verification.html";
+      });
+    </script>
+  </body>
+</html>

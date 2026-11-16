@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Espace Candidats - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html" aria-current="page">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Construisez votre avenir !</h1>
+        <p>
+          Découvrez des opportunités de stage et d'emploi adaptées à votre profil.
+        </p>
+
+        <div class="panneau" style="text-align: left">
+          <div class="ligne">
+            <div>
+              <label for="recherche">Rechercher une offre</label>
+              <input
+                id="recherche"
+                type="text"
+                placeholder="Ex. stage, comptable, marketing..."
+              />
+            </div>
+            <div>
+              <label for="filtre-type">Type</label>
+              <select id="filtre-type">
+                <option value="">Tous</option>
+                <option value="Stage">Stage</option>
+                <option value="Emploi">Emploi</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="mes-competences">Mes compétences</label>
+          <input
+            id="mes-competences"
+            type="text"
+            placeholder="Ex. Marketing, Communication, Excel..."
+          />
+          <p class="aide">Sépare tes compétences par des virgules.</p>
+
+          <p style="margin-bottom: 0">
+            <button id="trouver-match" type="button">Trouver mes opportunités</button>
+            <button id="reinitialiser" type="button" class="secondary">Réinitialiser</button>
+          </p>
+          <p id="resultat-match" class="message" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="contenu">
+        <h2>Explorer par catégorie</h2>
+        <div id="liste-categories" class="categories"></div>
+      </section>
+
+      <section class="contenu">
+        <h2>Opportunités pour vous</h2>
+        <div id="liste-offres"></div>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Tous droits réservés.</footer>
+
+    <script src="data.js"></script>
+    <script src="auth.js"></script>
+    <script>
+      const champRecherche = document.getElementById("recherche");
+      const filtreType = document.getElementById("filtre-type");
+      const champCompetences = document.getElementById("mes-competences");
+      const boutonMatch = document.getElementById("trouver-match");
+      const boutonReset = document.getElementById("reinitialiser");
+      const messageMatch = document.getElementById("resultat-match");
+      const listeOffres = document.getElementById("liste-offres");
+
+      let mesCompetences = []; // vide tant que le candidat n'a pas lancé le matching
+      // "Postuler" ajoute l'offre à Mes candidatures (stockées dans le navigateur, voir auth.js)
+      const candidatures = {
+        has: function (t) { return estDansPanier(t); },
+        add: function (t) {
+          const o = toutesLesOffres().find(function (x) { return x.titre === t; });
+          if (o) ajouterAuPanier(o);
+        },
+        delete: function (t) { retirerDuPanier(t); }
+      };
+
+      function creerCarte(offre, matching) {
+        const tagsCompetences = offre.competences
+          .map(function (competence) {
+            const estCommune = matching && matching.communes.indexOf(competence) !== -1;
+            return (
+              '<span class="tag' + (estCommune ? " commun" : "") + '">' +
+              (estCommune ? "✓ " : "") + echapper(competence) + "</span>"
+            );
+          })
+          .join("");
+
+        const blocScore = matching
+          ? '<div class="score">' +
+              '<span class="score-texte">Compatibilité : ' + matching.score + "%</span>" +
+              '<div class="barre"><span style="width:' + matching.score + '%"></span></div>' +
+            "</div>"
+          : "";
+
+        const dejaPostule = candidatures.has(offre.titre);
+
+        return (
+          '<article class="job-card">' +
+            "<h3>" + echapper(offre.titre) + "</h3>" +
+            "<p><strong>Entreprise :</strong> " + echapper(offre.entreprise) + "</p>" +
+            '<span class="tag">' + echapper(offre.type) + "</span>" +
+            '<span class="tag">' + echapper(offre.niveau) + "</span>" +
+            blocScore +
+            "<p>" + echapper(offre.description) + "</p>" +
+            '<p class="sous-titre">Compétences recherchées :</p>' +
+            tagsCompetences +
+            "<p>" +
+              '<button type="button" class="postuler' + (dejaPostule ? " secondary" : "") +
+              '" data-titre="' + echapper(offre.titre) + '">' +
+              (dejaPostule ? "✓ Candidature envoyée — Annuler" : "Postuler") + "</button>" +
+            "</p>" +
+          "</article>"
+        );
+      }
+
+      function afficherOffres() {
+        const mot = normaliser(champRecherche.value);
+        const type = filtreType.value;
+
+        // 1) filtrer par texte et par type
+        let resultats = toutesLesOffres()
+          .filter(function (offre) {
+            const texte = normaliser(
+              offre.titre + " " + offre.entreprise + " " + offre.type + " " +
+              offre.description + " " + offre.competences.join(" ")
+            );
+            return texte.includes(mot) && (type === "" || offre.type === type);
+          })
+          .map(function (offre) {
+            return {
+              offre: offre,
+              matching: mesCompetences.length > 0
+                ? calculerMatching(offre.competences, mesCompetences)
+                : null
+            };
+          });
+
+        // 2) si le matching est actif : garder score > 0 et trier du meilleur au moins bon
+        if (mesCompetences.length > 0) {
+          resultats = resultats
+            .filter(function (r) { return r.matching.score > 0; })
+            .sort(function (a, b) { return b.matching.score - a.matching.score; });
+        }
+
+        // 3) afficher
+        if (resultats.length === 0) {
+          listeOffres.innerHTML =
+            '<p style="text-align:center">Aucune offre ne correspond. Essaie d\'autres mots ou compétences.</p>';
+        } else {
+          listeOffres.innerHTML = resultats
+            .map(function (r) { return creerCarte(r.offre, r.matching); })
+            .join("");
+        }
+
+        return resultats.length;
+      }
+
+      // Recherche en direct
+      champRecherche.addEventListener("input", afficherOffres);
+      filtreType.addEventListener("change", afficherOffres);
+
+      // Bouton "Trouver mes opportunités"
+      boutonMatch.addEventListener("click", function () {
+        const saisies = separerCompetences(champCompetences.value);
+
+        if (saisies.length === 0) {
+          messageMatch.className = "message erreur";
+          messageMatch.textContent = "Écris au moins une compétence, séparées par des virgules.";
+          return;
+        }
+
+        mesCompetences = saisies;
+        const nombre = afficherOffres();
+        messageMatch.className = "message";
+        messageMatch.textContent =
+          nombre === 0
+            ? "Aucune opportunité trouvée pour ces compétences."
+            : nombre + " opportunité(s) trouvée(s), classées de la plus à la moins compatible.";
+      });
+
+      // Touche Entrée dans le champ compétences = clic sur le bouton
+      champCompetences.addEventListener("keydown", function (evenement) {
+        if (evenement.key === "Enter") {
+          boutonMatch.click();
+        }
+      });
+
+      // Bouton "Réinitialiser"
+      boutonReset.addEventListener("click", function () {
+        mesCompetences = [];
+        champCompetences.value = "";
+        champRecherche.value = "";
+        filtreType.value = "";
+        messageMatch.textContent = "";
+        afficherOffres();
+      });
+
+      // Bouton "Postuler" (un seul écouteur pour toutes les cartes)
+      listeOffres.addEventListener("click", function (evenement) {
+        const bouton = evenement.target.closest(".postuler");
+        if (!bouton) return;
+        const titre = bouton.dataset.titre;
+
+        if (candidatures.has(titre)) {
+          candidatures.delete(titre); // annuler la candidature
+        } else {
+          candidatures.add(titre); // envoyer la candidature
+        }
+
+        afficherOffres(); // redessiner les cartes avec le bon bouton
+      });
+
+      // Affiche les catégories
+      document.getElementById("liste-categories").innerHTML =
+        CATEGORIES.map(creerCarteCategorie).join("");
+
+      // Si on arrive depuis une page catégorie (?q=titre), on remplit la recherche
+      const parametres = new URLSearchParams(window.location.search);
+      if (parametres.get("q")) {
+        champRecherche.value = parametres.get("q");
+      }
+
+      afficherOffres();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vérification - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Vérifiez votre adresse e-mail</h1>
+        <p>Étape simulée : aucun e-mail réel n'a été envoyé.</p>
+      </section>
+      <section class="contenu">
+        <div class="panneau form-etroit">
+          <p>Pour la démonstration, saisis le code ci-dessous :</p>
+          <p class="code-demo" id="code-affiche"></p>
+          <form id="form" novalidate>
+            <label for="code">Code de vérification</label>
+            <input id="code" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" />
+            <p><button type="submit">Vérifier</button></p>
+            <p id="msg" class="message" role="alert"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Démonstration : aucune donnée réelle, aucun paiement.</footer>
+
+    <script src="auth.js"></script>
+    <script>
+      const emailAttente = lire(CLES.attente, null);
+      if (!emailAttente) { window.location.href = "inscription.html"; }
+      document.getElementById("code-affiche").textContent = CODE_DEMO;
+      document.getElementById("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const msg = document.getElementById("msg");
+        if (document.getElementById("code").value.trim() !== CODE_DEMO) {
+          msg.className = "message erreur"; msg.textContent = "Code incorrect."; return;
+        }
+        saveUsers(getUsers().map(function (u) { if (u.email === emailAttente) u.verifie = true; return u; }));
+        try { localStorage.removeItem(CLES.attente); } catch (err) {}
+        msg.className = "message"; msg.textContent = "Compte vérifié ! Redirection vers la connexion...";
+        setTimeout(function () { window.location.href = "connexion.html?verifie=1"; }, 1200);
+      });
+    </script>
+  </body>
+</html>

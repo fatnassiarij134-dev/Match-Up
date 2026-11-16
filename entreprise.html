@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Espace Entreprises - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html" aria-current="page">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Recrutez le bon profil !</h1>
+        <p>
+          Publiez votre besoin, puis découvrez les candidats dont les
+          compétences correspondent le mieux.
+        </p>
+      </section>
+
+      <section class="contenu">
+        <h2>1. Publier une offre</h2>
+        <form id="formulaire-offre" class="panneau">
+          <label for="titre">Titre du poste</label>
+          <input id="titre" type="text" placeholder="Ex. Stage en Business Intelligence" required />
+
+          <label for="entreprise">Nom de l'entreprise</label>
+          <input id="entreprise" type="text" placeholder="Ex. Société de conseil" required />
+
+          <div class="ligne">
+            <div>
+              <label for="type">Type</label>
+              <select id="type">
+                <option value="Stage">Stage</option>
+                <option value="Emploi">Emploi</option>
+              </select>
+            </div>
+            <div>
+              <label for="niveau">Niveau</label>
+              <select id="niveau">
+                <option value="Débutant accepté">Débutant accepté</option>
+                <option value="1 an d'expérience">1 an d'expérience</option>
+                <option value="Expérimenté">Expérimenté</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="categorie">Catégorie</label>
+          <select id="categorie"></select>
+
+          <label for="description">Description</label>
+          <textarea id="description" rows="3" placeholder="Décrivez la mission en une ou deux phrases." required></textarea>
+
+          <label for="competences">Compétences recherchées</label>
+          <input id="competences" type="text" placeholder="Ex. SQL, Excel, Power BI" required />
+          <p class="aide">Sépare les compétences par des virgules.</p>
+
+          <p><button type="submit">Publier l'offre</button></p>
+          <p id="message-offre" class="message" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="contenu">
+        <h2>2. Trouver les candidats compatibles</h2>
+        <div class="panneau">
+          <label for="choix-offre">Choisir une offre</label>
+          <select id="choix-offre"></select>
+          <p><button id="chercher-candidats" type="button">Voir les candidats</button></p>
+        </div>
+        <div id="liste-candidats"></div>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Tous droits réservés.</footer>
+
+    <script src="data.js"></script>
+    <script>
+      const formulaire = document.getElementById("formulaire-offre");
+      const messageOffre = document.getElementById("message-offre");
+      const choixOffre = document.getElementById("choix-offre");
+      const boutonCandidats = document.getElementById("chercher-candidats");
+      const listeCandidats = document.getElementById("liste-candidats");
+
+      // Remplit la liste déroulante avec toutes les offres
+      function remplirListeOffres() {
+        choixOffre.innerHTML = toutesLesOffres()
+          .map(function (offre, index) {
+            return (
+              '<option value="' + index + '">' +
+              echapper(offre.titre) + " — " + echapper(offre.entreprise) +
+              "</option>"
+            );
+          })
+          .join("");
+      }
+
+      // Publication d'une nouvelle offre
+      formulaire.addEventListener("submit", function (evenement) {
+        evenement.preventDefault();
+
+        const competences = separerCompetences(document.getElementById("competences").value);
+
+        if (competences.length === 0) {
+          messageOffre.className = "message erreur";
+          messageOffre.textContent = "Ajoute au moins une compétence recherchée.";
+          return;
+        }
+
+        publierOffre({
+          titre: document.getElementById("titre").value.trim(),
+          entreprise: document.getElementById("entreprise").value.trim(),
+          type: document.getElementById("type").value,
+          niveau: document.getElementById("niveau").value,
+          categorie: document.getElementById("categorie").value,
+          description: document.getElementById("description").value.trim(),
+          competences: competences
+        });
+
+        formulaire.reset();
+        remplirListeOffres();
+        messageOffre.className = "message";
+        messageOffre.textContent =
+          "Offre publiée ! Elle est maintenant visible dans l'espace candidats.";
+      });
+
+      // Affichage des candidats classés par score
+      boutonCandidats.addEventListener("click", function () {
+        const offre = toutesLesOffres()[Number(choixOffre.value)];
+
+        if (!offre) {
+          listeCandidats.innerHTML = "";
+          return;
+        }
+
+        const resultats = CANDIDATS
+          .map(function (candidat) {
+            return {
+              candidat: candidat,
+              matching: calculerMatching(offre.competences, candidat.competences)
+            };
+          })
+          .filter(function (r) { return r.matching.score > 0; })
+          .sort(function (a, b) { return b.matching.score - a.matching.score; });
+
+        if (resultats.length === 0) {
+          listeCandidats.innerHTML =
+            '<p style="text-align:center">Aucun candidat ne correspond à cette offre pour le moment.</p>';
+          return;
+        }
+
+        listeCandidats.innerHTML = resultats
+          .map(function (r) {
+            const tags = r.candidat.competences
+              .map(function (competence) {
+                const estCommune = r.matching.communes.some(function (c) {
+                  return normaliser(c) === normaliser(competence) ||
+                    normaliser(c).includes(normaliser(competence)) ||
+                    normaliser(competence).includes(normaliser(c));
+                });
+                return (
+                  '<span class="tag' + (estCommune ? " commun" : "") + '">' +
+                  (estCommune ? "✓ " : "") + echapper(competence) + "</span>"
+                );
+              })
+              .join("");
+
+            return (
+              '<article class="job-card">' +
+                "<h3>" + echapper(r.candidat.nom) + "</h3>" +
+                "<p>" + echapper(r.candidat.formation) + "</p>" +
+                '<div class="score">' +
+                  '<span class="score-texte">Compatibilité : ' + r.matching.score + "%</span>" +
+                  '<div class="barre"><span style="width:' + r.matching.score + '%"></span></div>' +
+                "</div>" +
+                '<p class="sous-titre">Compétences du candidat :</p>' +
+                tags +
+              "</article>"
+            );
+          })
+          .join("");
+      });
+
+      // Liste des catégories dans le formulaire
+      document.getElementById("categorie").innerHTML = CATEGORIES
+        .map(function (categorie) {
+          return '<option value="' + categorie.id + '">' + echapper(categorie.nom) + "</option>";
+        })
+        .join("");
+
+      remplirListeOffres();
+    </script>
+    <script src="auth.js"></script>
+  </body>
+</html>

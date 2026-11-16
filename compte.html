@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon compte - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Mon compte</h1>
+        <p>Ton espace personnel de démonstration.</p>
+      </section>
+      <section class="contenu">
+        <div class="panneau">
+          <h2 id="bonjour" style="text-align:left"></h2>
+          <p><strong>Prénom :</strong> <span id="i-prenom"></span></p>
+          <p><strong>Nom :</strong> <span id="i-nom"></span></p>
+          <p><strong>E-mail (fictif) :</strong> <span id="i-email"></span></p>
+          <p><strong>Compte vérifié :</strong> <span id="i-verif"></span></p>
+          <p><button type="button" id="deco">Se déconnecter</button></p>
+        </div>
+        <h2>Mes candidatures confirmées</h2>
+        <div id="liste"></div>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Démonstration : aucune donnée réelle, aucun paiement.</footer>
+
+    <script src="auth.js"></script>
+    <script>
+      if (requireLogin()) {
+        const u = getCurrentUser();
+        document.getElementById("bonjour").textContent = "Bonjour, " + u.prenom;
+        document.getElementById("i-prenom").textContent = u.prenom;
+        document.getElementById("i-nom").textContent = u.nom;
+        document.getElementById("i-email").textContent = u.email;
+        document.getElementById("i-verif").textContent = u.verifie ? "Oui" : "Non";
+        document.getElementById("deco").addEventListener("click", logout);
+        const mes = getOrders().filter(function (o) { return o.email === u.email; });
+        document.getElementById("liste").innerHTML = mes.length === 0
+          ? '<p style="text-align:center">Aucune candidature confirmée pour le moment.</p>'
+          : mes.map(function (o) {
+              return '<article class="job-card"><h3>' + echapperHtml(o.ref) + "</h3>" +
+                "<p>" + echapperHtml(o.date) + " — " + o.offres.length + " offre(s)</p>" +
+                '<span class="tag">Candidature simulée</span></article>';
+            }).join("");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmation - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Merci pour votre candidature !</h1>
+        <p>Tes candidatures ont été enregistrées dans le cadre d'une démonstration.</p>
+      </section>
+      <section class="contenu">
+        <div class="panneau" id="boite"></div>
+        <p style="text-align:center">
+          <a class="button" href="index.html">Retour à l'accueil</a>
+          <a class="button secondary" href="compte.html">Voir mon compte</a>
+        </p>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Démonstration : aucune donnée réelle, aucun paiement.</footer>
+
+    <script src="auth.js"></script>
+    <script>
+      const ref = new URLSearchParams(window.location.search).get("ref");
+      const o = getOrders().find(function (x) { return x.ref === ref; });
+      document.getElementById("boite").innerHTML = !o ? "<p>Aucune candidature trouvée.</p>" :
+        "<p><strong>Référence :</strong> " + echapperHtml(o.ref) + "</p>" +
+        "<p><strong>Date :</strong> " + echapperHtml(o.date) + "</p>" +
+        "<p><strong>Offres :</strong></p>" + o.offres.map(function (x) { return '<span class="tag">' + echapperHtml(x.titre) + "</span>"; }).join("") +
+        "<p>Aucune candidature réelle n'a été envoyée : c'est une simulation.</p>";
+    </script>
+  </body>
+</html>

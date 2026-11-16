@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matching Up - Accueil</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html" aria-current="page">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="accueil">
+        <div class="eyebrow">VOTRE AVENIR COMMENCE ICI</div>
+        <h1>Le bon profil,<br />la bonne opportunité.</h1>
+        <p>
+          Matching Up compare les compétences des candidats avec les besoins des
+          entreprises, puis calcule un score de correspondance.
+        </p>
+        <a class="button" href="candidat.html">Je suis candidat</a>
+        <a class="button secondary" href="entreprise.html">Je recrute</a>
+      </section>
+
+      <section class="features">
+        <div class="feature">
+          <h3>🎯 Profils adaptés</h3>
+          <p>Trouvez les profils qui correspondent à vos besoins.</p>
+        </div>
+        <div class="feature">
+          <h3>🚀 Opportunités ciblées</h3>
+          <p>Découvrez des opportunités qui vous correspondent.</p>
+        </div>
+        <div class="feature">
+          <h3>🤝 Connexion simple</h3>
+          <p>Facilitez la rencontre entre talents et entreprises.</p>
+        </div>
+      </section>
+
+      <section class="contenu">
+        <h2>Nos catégories</h2>
+        <div id="liste-categories" class="categories"></div>
+      </section>
+
+      <h2 class="etapes-titre">Comment fonctionne le matching ?</h2>
+      <section class="etapes">
+        <div class="etape">
+          <strong>1. Le candidat</strong>
+          <p>Il saisit ses compétences : Excel, SQL, Communication...</p>
+        </div>
+        <div class="etape">
+          <strong>2. L'entreprise</strong>
+          <p>Elle publie une offre avec les compétences recherchées.</p>
+        </div>
+        <div class="etape">
+          <strong>3. Le score</strong>
+          <p>Le site compte les compétences communes et affiche un pourcentage.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Tous droits réservés.</footer>
+
+    <script src="data.js"></script>
+    <script>
+      document.getElementById("liste-categories").innerHTML =
+        CATEGORIES.map(creerCarteCategorie).join("");
+    </script>
+    <script src="auth.js"></script>
+  </body>
+</html>

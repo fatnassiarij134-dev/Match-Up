@@ -1,0 +1,443 @@
+/* ===== Matching Up : style commun ===== */
+:root {
+  --violet: #6d28d9;
+  --violet-fonce: #5b21b6;
+  --violet-clair: #ede9fe;
+  --fond: #f5f3ff;
+  --texte: #172554;
+  --gris: #64748b;
+  --vert: #15803d;
+  --vert-clair: #dcfce7;
+  --bordure: #c4b5fd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--fond);
+  color: var(--texte);
+  line-height: 1.6;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 2px;
+}
+
+/* ----- En-tête ----- */
+header {
+  background: white;
+  padding: 18px 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid var(--violet-clair);
+}
+
+header h2 {
+  color: var(--violet);
+  margin: 0;
+}
+
+nav a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: var(--texte);
+  padding-bottom: 4px;
+}
+
+nav a:hover {
+  color: var(--violet);
+}
+
+nav a[aria-current="page"] {
+  color: var(--violet);
+  font-weight: bold;
+  border-bottom: 3px solid var(--violet);
+}
+
+/* ----- Bandeau d'introduction ----- */
+.hero {
+  text-align: center;
+  padding: 55px 20px;
+  background: linear-gradient(135deg, #eef2ff, #ede9fe);
+}
+
+.hero h1 {
+  font-size: 38px;
+  margin: 10px 0;
+}
+
+.hero p {
+  font-size: 18px;
+  max-width: 640px;
+  margin: 10px auto;
+}
+
+.eyebrow {
+  color: var(--violet);
+  font-weight: bold;
+}
+
+/* ----- Boutons ----- */
+.button,
+button {
+  display: inline-block;
+  background: var(--violet);
+  color: white;
+  padding: 12px 20px;
+  border: 2px solid var(--violet);
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.button:hover,
+button:hover {
+  background: var(--violet-fonce);
+  border-color: var(--violet-fonce);
+}
+
+.secondary {
+  background: white;
+  color: var(--violet);
+}
+
+.secondary:hover {
+  background: var(--violet-clair);
+  color: var(--violet-fonce);
+}
+
+button:disabled {
+  background: var(--vert-clair);
+  border-color: var(--vert-clair);
+  color: var(--vert);
+  cursor: default;
+}
+
+/* ----- Formulaires ----- */
+label {
+  display: block;
+  font-weight: bold;
+  margin: 14px 0 6px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  background: white;
+  color: var(--texte);
+}
+
+.aide {
+  color: var(--gris);
+  font-size: 14px;
+  margin: 4px 0 0;
+}
+
+.panneau {
+  background: white;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px #ddd6fe;
+}
+
+.ligne {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.ligne > * {
+  flex: 1 1 200px;
+}
+
+.ligne button {
+  flex: 0 0 auto;
+}
+
+.message {
+  min-height: 24px;
+  font-weight: bold;
+  color: var(--violet-fonce);
+}
+
+.message.erreur {
+  color: #b91c1c;
+}
+
+/* ----- Cartes ----- */
+section.contenu {
+  padding: 35px 8%;
+}
+
+section.contenu h2 {
+  text-align: center;
+}
+
+.job-card {
+  background: white;
+  padding: 22px;
+  margin: 20px auto;
+  max-width: 760px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px #ddd6fe;
+}
+
+.job-card h3 {
+  color: var(--violet);
+  margin: 0 0 4px;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--violet-clair);
+  color: var(--violet-fonce);
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin: 4px 4px 4px 0;
+  font-size: 13px;
+}
+
+.tag.commun {
+  background: var(--vert-clair);
+  color: var(--vert);
+  font-weight: bold;
+}
+
+.sous-titre {
+  font-weight: bold;
+  margin: 12px 0 2px;
+}
+
+/* ----- Score de matching ----- */
+.score {
+  margin: 12px 0;
+}
+
+.score-texte {
+  font-weight: bold;
+  color: var(--vert);
+}
+
+.barre {
+  height: 10px;
+  background: var(--violet-clair);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.barre span {
+  display: block;
+  height: 100%;
+  background: var(--violet);
+  border-radius: 10px;
+  transition: width 0.4s;
+}
+
+/* ----- Page d'accueil ----- */
+.accueil {
+  text-align: center;
+  padding: 90px 20px;
+  background: linear-gradient(135deg, #eef2ff, #ede9fe);
+}
+
+.accueil h1 {
+  font-size: 46px;
+  margin: 20px 0;
+  line-height: 1.2;
+}
+
+.accueil p {
+  font-size: 18px;
+  max-width: 620px;
+  margin: 0 auto 20px;
+}
+
+.features,
+.etapes {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 35px 15px;
+  flex-wrap: wrap;
+}
+
+.feature {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  width: 240px;
+  text-align: center;
+  box-shadow: 0 5px 20px #ddd6fe;
+}
+
+.feature p {
+  margin: 0;
+}
+
+.etapes-titre {
+  text-align: center;
+  margin: 30px 0 0;
+}
+
+.etape {
+  background: white;
+  width: 280px;
+  padding: 22px;
+  border-radius: 15px;
+  border-top: 5px solid var(--violet);
+  box-shadow: 0 5px 20px #ddd6fe;
+}
+
+.etape strong {
+  color: var(--violet);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--gris);
+}
+
+@media (max-width: 600px) {
+  .hero h1,
+  .accueil h1 {
+    font-size: 30px;
+  }
+
+  nav a {
+    margin-left: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barre span {
+    transition: none;
+  }
+}
+
+/* ----- Catégories ----- */
+.categories,
+.grille-offres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.grille-offres {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grille-offres .job-card {
+  margin: 0;
+  max-width: none;
+}
+
+.carte-categorie {
+  background: white;
+  padding: 24px;
+  border-radius: 15px;
+  border-top: 5px solid var(--violet);
+  box-shadow: 0 5px 20px #ddd6fe;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.carte-categorie h3 {
+  color: var(--violet);
+  margin: 0;
+}
+
+.carte-categorie p {
+  margin: 0;
+}
+
+.carte-categorie .icone {
+  font-size: 34px;
+}
+
+.carte-categorie .button {
+  margin-top: auto;
+  text-align: center;
+}
+
+.fil-ariane {
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.fil-ariane a {
+  color: var(--violet);
+}
+
+/* ----- Compte et candidatures ----- */
+.compteur-panier {
+  display: inline-block;
+  background: var(--violet);
+  color: white;
+  border-radius: 20px;
+  padding: 0 8px;
+  font-size: 13px;
+}
+
+.form-etroit {
+  max-width: 480px;
+}
+
+.lien-violet {
+  color: var(--violet);
+}
+
+.ligne-panier {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.code-demo {
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 6px;
+  color: var(--violet);
+}
+
+.case {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-weight: normal;
+}
+
+.case input {
+  width: auto;
+  margin-top: 5px;
+}

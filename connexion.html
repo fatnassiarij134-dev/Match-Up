@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Connexion</h1>
+        <p>Accède à ton espace avec ton compte de démonstration.</p>
+      </section>
+      <section class="contenu">
+        <form id="form" class="panneau form-etroit" novalidate>
+          <label for="email">Adresse e-mail</label>
+          <input id="email" type="email" autocomplete="email" />
+          <label for="mdp">Mot de passe de démonstration</label>
+          <input id="mdp" type="password" autocomplete="current-password" />
+          <p><button type="submit">Se connecter</button></p>
+          <p id="msg" class="message" role="alert"></p>
+          <p><a class="lien-violet" href="inscription.html">Créer un compte</a> ·
+             <a class="lien-violet" href="#" id="oublie">Mot de passe oublié</a></p>
+        </form>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Démonstration : aucune donnée réelle, aucun paiement.</footer>
+
+    <script src="auth.js"></script>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const msg = document.getElementById("msg");
+      if (params.get("verifie")) { msg.textContent = "Compte vérifié, tu peux te connecter."; }
+      document.getElementById("oublie").addEventListener("click", function (e) {
+        e.preventDefault();
+        msg.className = "message"; msg.textContent = "Cette fonction n'est pas disponible dans le prototype.";
+      });
+      document.getElementById("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim().toLowerCase();
+        const mdp = document.getElementById("mdp").value;
+        const user = getUsers().find(function (u) { return u.email === email; });
+        msg.className = "message erreur";
+        if (!user || user.hash !== hashDemo(mdp)) { msg.textContent = "E-mail ou mot de passe incorrect."; return; }
+        if (!user.verifie) { ecrire(CLES.attente, email); msg.innerHTML = 'Compte non vérifié. <a class="lien-violet" href="verification.html">Vérifier maintenant</a>'; return; }
+        login(email);
+        const retour = params.get("retour");
+        window.location.href = (retour && /^[a-z-]+\.html$/.test(retour)) ? retour : "compte.html";
+      });
+    </script>
+  </body>
+</html>

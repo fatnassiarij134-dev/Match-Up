@@ -20,43 +20,28 @@
     <main>
       <section class="hero">
         <h1>Mes candidatures</h1>
-        <p>Les offres auxquelles tu as postulé, avant confirmation.</p>
+        <p>Les offres auxquelles tu as postulé, avant de passer à la commande.</p>
       </section>
       <section class="contenu">
         <div id="liste"></div>
-        <form id="form" class="panneau form-etroit" novalidate hidden>
-          <h2 style="text-align:left">Confirmer mes candidatures</h2>
-          <label for="prenom">Prénom</label>
-          <input id="prenom" type="text"  />
-          <label for="nom">Nom</label>
-          <input id="nom" type="text"  />
-          <label for="email">Adresse e-mail</label>
-          <input id="email" type="email"  />
-          <label for="tel">Téléphone</label>
-          <input id="tel" type="tel"  />
-          <label for="ville">Ville</label>
-          <input id="ville" type="text"  />
-          <label for="message">Message de motivation (facultatif)</label>
-          <textarea id="message" rows="3"></textarea>
-          <p class="aide">Démonstration : aucune candidature n'est réellement envoyée à une entreprise.</p>
-          <p><button type="submit" id="valider">Confirmer mes candidatures</button></p>
-          <p id="erreurs" class="message erreur" role="alert"></p>
-        </form>
+        <p id="actions" style="text-align:center" hidden>
+          <button type="button" id="commander">Passer à la commande</button>
+        </p>
       </section>
     </main>
 
     <footer>© 2026 Matching Up — Démonstration : aucune donnée réelle, aucun paiement.</footer>
 
+    <script src="data.js"></script>
     <script src="auth.js"></script>
     <script>
       function afficher() {
         const panier = getCart();
         const liste = document.getElementById("liste");
-        const form = document.getElementById("form");
         if (panier.length === 0) {
           liste.innerHTML = '<p style="text-align:center">Tu n\'as pas encore postulé.</p>' +
             '<p style="text-align:center"><a class="button" href="candidat.html">Découvrir les offres</a></p>';
-          form.hidden = true;
+          document.getElementById("actions").hidden = true;
           return;
         }
         liste.innerHTML = panier.map(function (o) {
@@ -64,32 +49,16 @@
             "<p>" + echapperHtml(o.entreprise) + ' — <span class="tag">' + echapperHtml(o.type) + "</span></p></div>" +
             '<button type="button" class="secondary retirer" data-titre="' + echapperHtml(o.titre) + '">Retirer</button></article>';
         }).join("") + '<p style="text-align:center"><strong>' + panier.length + " offre(s)</strong></p>";
-        form.hidden = false;
+        document.getElementById("actions").hidden = false;
       }
       document.getElementById("liste").addEventListener("click", function (e) {
         const b = e.target.closest(".retirer");
         if (b) { retirerDuPanier(b.dataset.titre); afficher(); }
       });
-      const user = getCurrentUser();
-      if (user) {
-        document.getElementById("prenom").value = user.prenom;
-        document.getElementById("nom").value = user.nom;
-        document.getElementById("email").value = user.email;
-      }
-      document.getElementById("form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (!requireLogin()) return; // protection simulée
-        const v = function (id) { return document.getElementById(id).value.trim(); };
-        if (getCart().length === 0) return;
-        if (!v("prenom") || !v("nom") || !v("email") || !v("tel") || !v("ville")) {
-          document.getElementById("erreurs").textContent = "Remplis tous les champs obligatoires."; return;
-        }
-        document.getElementById("valider").disabled = true; // évite la double validation
-        const ref = "MU-" + Date.now().toString(36).toUpperCase();
-        saveOrder({ ref: ref, date: new Date().toLocaleDateString("fr-FR"), email: getCurrentUser().email,
-          offres: getCart(), infos: { prenom: v("prenom"), nom: v("nom"), tel: v("tel"), ville: v("ville"), message: v("message") } });
-        saveCart([]);
-        window.location.href = "confirmation.html?ref=" + encodeURIComponent(ref);
+      document.getElementById("commander").addEventListener("click", function () {
+        if (getCart().length === 0) return; // pas de commande avec un panier vide
+        // Si pas connecté : on garde le panier et on revient au checkout après la connexion
+        window.location.href = getCurrentUser() ? "checkout.html" : "connexion.html?retour=checkout.html";
       });
       afficher();
     </script>

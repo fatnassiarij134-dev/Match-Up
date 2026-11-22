@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Matching Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h2>Matching Up</h2>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="candidat.html">Candidats</a>
+        <a href="entreprise.html">Entreprises</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Confirmer mes candidatures</h1>
+        <p>Vérifie tes informations puis confirme (simulation : rien n'est envoyé).</p>
+      </section>
+      <section class="contenu">
+        <div class="deux-colonnes" id="colonnes">
+          <form id="form" class="panneau" novalidate>
+            <h2 style="text-align:left">Mes informations</h2>
+          <label for="prenom">Prénom</label>
+          <input id="prenom" type="text"  />
+          <label for="nom">Nom</label>
+          <input id="nom" type="text"  />
+          <label for="email">Adresse e-mail</label>
+          <input id="email" type="email"  />
+          <label for="tel">Téléphone</label>
+          <input id="tel" type="tel"  />
+          <label for="ville">Ville</label>
+          <input id="ville" type="text"  />
+            <label for="message">Message de motivation (facultatif)</label>
+            <textarea id="message" rows="3"></textarea>
+            <p class="aide">Démonstration : aucune candidature n'est réellement envoyée à une entreprise.</p>
+            <p><button type="submit" id="valider">Confirmer mes candidatures</button></p>
+            <p id="erreurs" class="message erreur" role="alert"></p>
+          </form>
+          <aside class="panneau">
+            <h2 style="text-align:left">Résumé</h2>
+            <div id="resume"></div>
+            <p><a class="lien-violet" href="candidatures.html">Modifier ma sélection</a></p>
+          </aside>
+        </div>
+        <p id="vide" style="text-align:center" hidden>
+          Ta sélection est vide. <a class="lien-violet" href="candidat.html">Découvrir les offres</a>
+        </p>
+      </section>
+    </main>
+
+    <footer>© 2026 Matching Up — Démonstration : aucune donnée réelle, aucun paiement.</footer>
+
+    <script src="data.js"></script>
+    <script src="auth.js"></script>
+    <script>
+      // Protection SIMULÉE (pas une vraie sécurité) : il faut une session fictive
+      if (requireLogin()) {
+        const user = getCurrentUser();
+        const panier = getCart();
+        if (panier.length === 0) {
+          document.getElementById("colonnes").hidden = true;
+          document.getElementById("vide").hidden = false;
+        } else {
+          document.getElementById("prenom").value = user.prenom;
+          document.getElementById("nom").value = user.nom;
+          document.getElementById("email").value = user.email;
+          document.getElementById("resume").innerHTML = panier.map(function (o) {
+            return "<p><strong>" + echapperHtml(o.titre) + "</strong><br>" + echapperHtml(o.entreprise) + " — " + echapperHtml(o.type) + "</p>";
+          }).join("") + "<p><strong>Total : " + panier.length + " offre(s)</strong></p>";
+
+          document.getElementById("form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            if (!requireLogin() || getCart().length === 0) return;
+            const v = function (id) { return document.getElementById(id).value.trim(); };
+            if (!v("prenom") || !v("nom") || !v("email") || !v("tel") || !v("ville")) {
+              document.getElementById("erreurs").textContent = "Remplis tous les champs obligatoires."; return;
+            }
+            document.getElementById("valider").disabled = true; // évite la double validation
+            const ref = "MU-" + Date.now().toString(36).toUpperCase();
+            saveOrder({ ref: ref, date: new Date().toLocaleDateString("fr-FR"), email: getCurrentUser().email,
+              offres: getCart(), infos: { prenom: v("prenom"), nom: v("nom"), tel: v("tel"), ville: v("ville"), message: v("message") } });
+            saveCart([]);
+            window.location.href = "confirmation.html?ref=" + encodeURIComponent(ref);
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

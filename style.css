@@ -441,3 +441,73 @@ footer {
   width: auto;
   margin-top: 5px;
 }
+
+/* ----- Menu déroulant Catégories ----- */
+.menu-deroulant {
+  position: relative;
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.menu-deroulant > button.lien-menu {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--texte);
+  font-size: inherit;
+  font-weight: normal;
+}
+
+.menu-deroulant > button.lien-menu:hover {
+  background: none;
+  color: var(--violet);
+}
+
+.sous-menu {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  min-width: 240px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px #ddd6fe;
+  padding: 8px;
+  z-index: 10;
+}
+
+.sous-menu.ouvert {
+  display: block;
+}
+
+.sous-menu a {
+  display: block;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.sous-menu a:hover {
+  background: var(--violet-clair);
+}
+
+/* ----- Checkout : deux colonnes (une seule sur mobile) ----- */
+.deux-colonnes {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.deux-colonnes .panneau {
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .deux-colonnes {
+    grid-template-columns: 1fr;
+  }
+}

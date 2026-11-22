@@ -71,15 +71,37 @@ function updateCartCount() {
 function getOrders() { return lire(CLES.commandes, []); }
 function saveOrder(o) { const l = getOrders(); l.unshift(o); ecrire(CLES.commandes, l); }
 
-// ----- Navigation : ajoute Mes candidatures (compteur) et Compte sur toutes les pages -----
+// ----- Navigation : menu Catégories (déroulant), Mes candidatures (compteur) et Compte -----
 function initNav() {
   const nav = document.querySelector("header nav");
   if (!nav) return;
   const user = getCurrentUser();
-  nav.insertAdjacentHTML("beforeend",
+  let menu = "";
+  // CATEGORIES vient de data.js (si la page ne le charge pas, le menu est simplement omis)
+  if (typeof CATEGORIES !== "undefined") {
+    menu = '<div class="menu-deroulant"><button type="button" class="lien-menu" aria-expanded="false" aria-haspopup="true">Catégories ▾</button>' +
+      '<div class="sous-menu">' +
+      CATEGORIES.map(function (c) {
+        return '<a href="' + c.fichier + '">' + c.icone + " " + echapperHtml(c.nom) + "</a>";
+      }).join("") + "</div></div>";
+  }
+  nav.insertAdjacentHTML("beforeend", menu +
     '<a href="candidatures.html">Mes candidatures (<span class="compteur-panier">0</span>)</a>' +
     '<a href="' + (user ? "compte.html" : "connexion.html") + '">' +
     (user ? "👤 " + echapperHtml(user.prenom) : "Compte") + "</a>");
+
+  const bouton = nav.querySelector(".lien-menu");
+  if (bouton) {
+    const liste = nav.querySelector(".sous-menu");
+    const fermer = function () { liste.classList.remove("ouvert"); bouton.setAttribute("aria-expanded", "false"); };
+    bouton.addEventListener("click", function (e) {
+      e.stopPropagation();
+      const ouvert = liste.classList.toggle("ouvert");
+      bouton.setAttribute("aria-expanded", String(ouvert));
+    });
+    document.addEventListener("click", fermer);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") fermer(); });
+  }
   updateCartCount();
 }
 initNav();

@@ -5,7 +5,7 @@
   --violet-clair: #ede9fe;
   --fond: #f5f3ff;
   --texte: #172554;
-  --gris: #64748b;
+  --gris: #475569;
   --vert: #15803d;
   --vert-clair: #dcfce7;
   --bordure: #c4b5fd;
@@ -510,4 +510,12 @@ footer {
   .deux-colonnes {
     grid-template-columns: 1fr;
   }
+}
+
+/* Nom du site dans le header (paragraphe, pas un titre : le plan des titres reste propre) */
+.logo {
+  color: var(--violet);
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: bold;
 }

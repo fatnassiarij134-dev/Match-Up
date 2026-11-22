@@ -201,7 +201,7 @@ function creerCarteCategorie(categorie) {
       "<h3>" + echapper(categorie.nom) + "</h3>" +
       "<p>" + echapper(categorie.description) + "</p>" +
       '<p class="aide">' + nombre + " offre(s)</p>" +
-      '<a class="button" href="' + categorie.fichier + '">Découvrir</a>' +
+      '<a class="button" href="' + categorie.fichier + '">Voir les offres ' + echapper(categorie.nom) + '</a>' +
     "</div>"
   );
 }

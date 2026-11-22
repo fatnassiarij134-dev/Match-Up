@@ -22,7 +22,7 @@ function creerCarteOffre(offre) {
       "<p>" + echapper(offre.description) + "</p>" +
       '<p class="sous-titre">Compétences recherchées :</p>' +
       competences +
-      '<p><a class="button" href="' + lien + '">Voir cette offre</a></p>' +
+      '<p><a class="button" href="' + lien + '">Voir l\'offre « ' + echapper(offre.titre) + ' »</a></p>' +
     "</article>"
   );
 }

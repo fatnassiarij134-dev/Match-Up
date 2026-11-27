@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /compte.html
+Disallow: /connexion.html
+Disallow: /inscription.html
+Disallow: /verification.html
+Disallow: /candidatures.html
+Disallow: /checkout.html
+Disallow: /confirmation.html
+Sitemap: https://match-up-liard.vercel.app/sitemap.xml

@@ -1,0 +1,13 @@
+# Matching Up
+> Site de mise en relation entre candidats et entreprises : le candidat indique ses compétences, l'entreprise publie ses offres, et le site calcule un score de compatibilité. Offres de stage et d'emploi en Tunisie (projet étudiant de démonstration).
+
+## Pages principales
+- [Accueil](https://match-up-liard.vercel.app/): présentation du site et du principe de matching
+- [Espace candidats](https://match-up-liard.vercel.app/candidat.html): recherche d'offres et score de compatibilité
+- [Espace entreprises](https://match-up-liard.vercel.app/entreprise.html): publication d'offres et candidats compatibles
+
+## Catégories d'offres
+- [Marketing et communication](https://match-up-liard.vercel.app/categorie-marketing.html): stages et emplois en contenu, réseaux sociaux et campagnes
+- [Gestion et comptabilité](https://match-up-liard.vercel.app/categorie-gestion.html): informatique de gestion, Excel et comptabilité
+- [Business Intelligence](https://match-up-liard.vercel.app/categorie-bi.html): SQL, Power BI et analyse de données
+- [Développement web](https://match-up-liard.vercel.app/categorie-web.html): HTML, CSS, JavaScript et Git
